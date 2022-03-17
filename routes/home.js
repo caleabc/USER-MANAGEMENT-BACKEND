@@ -20,6 +20,8 @@ router.post("/user/create", async function (req, res) {
 
   roleData.save();
   userData.save();
+
+  res.json("OK");
 });
 
 router.post("/user/update/:id", async function (req, res) {
