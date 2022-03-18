@@ -5,7 +5,9 @@ var Role = require("../models/role");
 
 router.get("/", async function (req, res) {
   var users = await User.find({});
-  res.json(users);
+  var roles = await Role.find({});
+  var data = { users: users, roles: roles };
+  res.json(data);
 });
 
 router.post("/user/create", async function (req, res) {
@@ -24,12 +26,30 @@ router.post("/user/create", async function (req, res) {
   res.json("OK");
 });
 
-router.post("/user/update/:id", async function (req, res) {
-  var a = "";
+router.post("/user/update", async function (req, res) {
+  var data = req.body;
+
+  var findRole = await Role.findOne({ _id: req.body.originalUserRoleId });
+  if (findRole["name"] !== req.body.userRole) {
+    findRole["name"] = req.body.userRole;
+    var check = await Role.findOneAndUpdate(
+      {
+        _id: req.body.originalUserRoleId,
+      },
+      findRole
+    );
+  }
+
+  data["userRole"] = req.body.originalUserRoleId;
+  delete data["originalUserRoleId"];
+
+  await User.findOneAndUpdate({ email: req.body.email }, data);
+  res.json("OK");
 });
 
-router.get("/user/delete/:id", async function (req, res) {
-  var a = "";
+router.get("/user/delete/:email", async function (req, res) {
+  var check = await User.findOneAndDelete({ email: req.params.email });
+  res.json("OK");
 });
 
 // exports
