@@ -21,8 +21,11 @@ router.post("/user/create", async function (req, res) {
   userData = new User(userData);
 
   roleData.save();
-  userData.save();
 
+  // =================================
+  // always remember promise functions
+  // =================================
+  await userData.save();
   res.json("OK");
 });
 
